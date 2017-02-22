@@ -32,7 +32,7 @@ Simply extract the Enterprise-Stats-Sample-Receiver-master.zip package:
 
 ## Building the sample
 
-The build uses Gradle. Simple execute the assmeble target by executing the 
+The build uses Gradle. Simple execute the assemble target by executing the 
 following command:
 
    gradlew assemble
