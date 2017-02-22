@@ -91,24 +91,13 @@ task createAllStartScripts() << {
 
 installDist {
     destinationDir = new File(project.buildDir, 'build')
-	
-    //println 'install dir is ' + installDist.destinationDir
-
 }
 
 task copyTask(type: Copy) {
     String configDir = new File(project.buildDir, 'build/config')
-    println 'configDir is ' + configDir
-
     from 'config'
 	into { configDir } 
 } 
-
-plugins.withType(JavaPlugin){ //create copyOutput task for all java projects
-	tasks.create("echo") << {
-        println 'Hello world!'
-	}
-}
 
 assemble.dependsOn installDist
 assemble.finalizedBy( copyTask )
