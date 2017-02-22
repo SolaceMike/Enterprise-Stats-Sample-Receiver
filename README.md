@@ -26,7 +26,7 @@ type, such as message containing JSON payloads, are ignored and discarded.
 
 ## Installation
 
-Simply extract the solace-stats-receiver-bin-<version>.tar or zip package:
+Simply extract the Enterprise-Stats-Sample-Receiver-master.zip package:
 
     unzip Enterprise-Stats-Sample-Receiver-master.zip
 
