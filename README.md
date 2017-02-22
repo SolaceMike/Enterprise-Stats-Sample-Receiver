@@ -11,14 +11,19 @@ Things you'll need:
 
 ## Overview
 
-The receiver framework, consists of a simple Solace client to receive and 
+This package is the companion example code that goes with the Solace dev portal 
+blog post "Coding a custom Enterprise Stats Receiver" at
+https://solace.com/blog/products-tech/coding-enterprise-stats-receiver. Please read 
+that blog post before proceeding with this sample.
+
+The receiver framework consists of a simple Solace client to receive and 
 parse stat messages published by StatsPump, and and interface for a 
 user-defined plugin to store the parsed metrics in a time-series database. 
 The receiver framework uses a plugin based design to allow received metrics 
 to be stored in any database, such as InfluxDB time-series database.
 
-A sample built-in plugin is provided, for testing purposes, to output the 
-received stat messages on the console.
+A sample plugin is provided here for testing and illustration purposes. It
+simply outputs the received stat messages to the console.
 
 > NOTE: In the current version of the receiver framework, only message types 
 published by StatsPump using the SDTFactory class are parsed. Any other message
