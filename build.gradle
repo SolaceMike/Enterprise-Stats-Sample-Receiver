@@ -1,0 +1,114 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+// Don't need these task, so disabling them. Makes it possible to avoid
+// declaring a single application main class.
+startScripts.enabled = false
+run.enabled = false
+
+// Also don't need the regular application distribution packages since
+// this is just a set of samples. So disabling to make the build output
+// cleaner
+distTar.enabled=false
+distZip.enabled=false
+
+applicationName = 'solace-et-stats-sample'
+version = ''
+
+jar {
+	baseName = 'solace-et-stats-sample'
+    version =  version
+    manifest {
+        attributes 'Implementation-Title': 'Solace Enterprise Stats Receiver Sample',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+       dirs 'libs'
+    }
+}
+dependencies {
+	compile 'com.solace.psg.enterprisestats.receiver:stats-receiver:2.2.0'
+	compile 'com.solace.psg.enterprisestats.statpump:solace-statspump:2.2.0'
+
+	compile 'com.solace.psg.util:solace-pwd-utility:2.2.0'
+
+	// Solace Messaging API for Java Dependencies
+	compile 'commons-lang:commons-lang:2.2'
+	compile 'commons-logging:commons-logging:1.1.1'
+	compile 'com.solacesystems:sol-common:7.0.0.63'
+	compile 'com.solacesystems:sol-jcsmp:7.0.0.63'
+	compile 'javax.xml:jsr173_api'
+	
+	compile 'org.json:json:20151123'
+
+	// Logging dependencies
+	// SLF4J logging API is used at compile time and at run time we use log4j binding
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.7'
+	//runtime 'org.apache.log4j:log4j:1.2.17'
+
+	// JSON API dependency
+	compile 'javax.json:javax.json-api:1.0'
+
+	// Other misc dependencies
+	compile 'org.apache.commons:commons-codec:1.6'
+
+	// Declare the dependency for your favourite test framework you want to use in your tests.
+	// TestNG is also supported by the Gradle Test task. Just change the
+	// testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
+	// 'test.useTestNG()' to your build script.
+	testCompile 'junit:junit:4.12'
+	// Set this dependency if you want to use Hamcrest matching
+	testCompile 'org.hamcrest:hamcrest-core:1.3'	
+}
+
+task createAllStartScripts() << {
+     // just a placeholder
+}
+  def scripts = [ 'statsReceiver':'com.solace.psg.enterprisestats.receiver.StatsReceiver']
+  scripts.each() { scriptName, className ->
+          def t = tasks.create(name: scriptName+'StartScript', type: CreateStartScripts) {
+        mainClassName = className
+        applicationName = scriptName
+        outputDir = new File(project.buildDir, 'scripts')
+        classpath = jar.outputs.files + project.configurations.runtime
+    }
+      applicationDistribution.into("bin") {
+            from(t)
+            fileMode = 0755
+			duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+    createAllStartScripts.dependsOn(t)
+}
+
+installDist {
+    destinationDir = new File(project.buildDir, 'build')
+	
+    //println 'install dir is ' + installDist.destinationDir
+
+}
+
+task copyTask(type: Copy) {
+    String configDir = new File(project.buildDir, 'build/config')
+    println 'configDir is ' + configDir
+
+    from 'config'
+	into { configDir } 
+} 
+
+plugins.withType(JavaPlugin){ //create copyOutput task for all java projects
+	tasks.create("echo") << {
+        println 'Hello world!'
+	}
+}
+
+assemble.dependsOn installDist
+assemble.finalizedBy( copyTask )
